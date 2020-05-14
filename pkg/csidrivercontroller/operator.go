@@ -75,20 +75,20 @@ type csiDriverController struct {
 
 	operatorVersion string
 	operandVersion  string
-	images          images
+	images          Images
 
 	manifests resourceapply.AssetFunc
 	files     []string
 }
 
-type images struct {
-	csiDriver           string
-	attacher            string
-	provisioner         string
-	resizer             string
-	snapshotter         string
-	nodeDriverRegistrar string
-	livenessProbe       string
+type Images struct {
+	CSIDriver           string
+	Attacher            string
+	Provisioner         string
+	Resizer             string
+	Snapshotter         string
+	NodeDriverRegistrar string
+	LivenessProbe       string
 }
 
 func NewCSIDriverController(
@@ -101,7 +101,7 @@ func NewCSIDriverController(
 	eventRecorder events.Recorder,
 	operatorVersion string,
 	operandVersion string,
-	images images,
+	images Images,
 	manifests resourceapply.AssetFunc,
 	files []string,
 ) *csiDriverController {
