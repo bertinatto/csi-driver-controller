@@ -83,13 +83,13 @@ type csiDriverController struct {
 }
 
 type images struct {
-	CSIDriver           string
-	Attacher            string
-	Provisioner         string
-	Resizer             string
-	Snapshotter         string
-	NodeDriverRegistrar string
-	LivenessProbe       string
+	csiDriver           string
+	attacher            string
+	provisioner         string
+	resizer             string
+	snapshotter         string
+	nodeDriverRegistrar string
+	livenessProbe       string
 }
 
 func NewCSIDriverController(
@@ -359,12 +359,12 @@ func logInformerEvent(kind, obj interface{}, message string) {
 
 func imagesFromEnv() images {
 	return images{
-		CSIDriver:           os.Getenv(driverImageEnvName),
-		Provisioner:         os.Getenv(provisionerImageEnvName),
-		Attacher:            os.Getenv(attacherImageEnvName),
-		Resizer:             os.Getenv(resizerImageEnvName),
-		Snapshotter:         os.Getenv(snapshotterImageEnvName),
-		NodeDriverRegistrar: os.Getenv(nodeDriverRegistrarImageEnvName),
-		LivenessProbe:       os.Getenv(livenessProbeImageEnvName),
+		csiDriver:           os.Getenv(driverImageEnvName),
+		provisioner:         os.Getenv(provisionerImageEnvName),
+		attacher:            os.Getenv(attacherImageEnvName),
+		resizer:             os.Getenv(resizerImageEnvName),
+		snapshotter:         os.Getenv(snapshotterImageEnvName),
+		nodeDriverRegistrar: os.Getenv(nodeDriverRegistrarImageEnvName),
+		livenessProbe:       os.Getenv(livenessProbeImageEnvName),
 	}
 }

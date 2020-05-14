@@ -95,20 +95,20 @@ func (c *csiDriverController) getExpectedDeployment(spec *operatorv1.OperatorSpe
 
 	deployment := resourceread.ReadDeploymentV1OrDie(bytes)
 
-	if c.images.CSIDriver != "" {
-		deployment.Spec.Template.Spec.Containers[0].Image = c.images.CSIDriver
+	if c.images.csiDriver != "" {
+		deployment.Spec.Template.Spec.Containers[0].Image = c.images.csiDriver
 	}
-	if c.images.Provisioner != "" {
-		deployment.Spec.Template.Spec.Containers[provisionerContainerIndex].Image = c.images.Provisioner
+	if c.images.provisioner != "" {
+		deployment.Spec.Template.Spec.Containers[provisionerContainerIndex].Image = c.images.provisioner
 	}
-	if c.images.Attacher != "" {
-		deployment.Spec.Template.Spec.Containers[attacherContainerIndex].Image = c.images.Attacher
+	if c.images.attacher != "" {
+		deployment.Spec.Template.Spec.Containers[attacherContainerIndex].Image = c.images.attacher
 	}
-	if c.images.Resizer != "" {
-		deployment.Spec.Template.Spec.Containers[resizerContainerIndex].Image = c.images.Resizer
+	if c.images.resizer != "" {
+		deployment.Spec.Template.Spec.Containers[resizerContainerIndex].Image = c.images.resizer
 	}
-	if c.images.Snapshotter != "" {
-		deployment.Spec.Template.Spec.Containers[snapshottterContainerIndex].Image = c.images.Snapshotter
+	if c.images.snapshotter != "" {
+		deployment.Spec.Template.Spec.Containers[snapshottterContainerIndex].Image = c.images.snapshotter
 	}
 
 	// TODO: add LivenessProbe when
@@ -132,14 +132,14 @@ func (c *csiDriverController) getExpectedDaemonSet(spec *operatorv1.OperatorSpec
 	}
 	daemonSet := resourceread.ReadDaemonSetV1OrDie(bytes)
 
-	if c.images.CSIDriver != "" {
-		daemonSet.Spec.Template.Spec.Containers[csiDriverContainerIndex].Image = c.images.CSIDriver
+	if c.images.csiDriver != "" {
+		daemonSet.Spec.Template.Spec.Containers[csiDriverContainerIndex].Image = c.images.csiDriver
 	}
-	if c.images.NodeDriverRegistrar != "" {
-		daemonSet.Spec.Template.Spec.Containers[nodeDriverRegistrarContainerIndex].Image = c.images.NodeDriverRegistrar
+	if c.images.nodeDriverRegistrar != "" {
+		daemonSet.Spec.Template.Spec.Containers[nodeDriverRegistrarContainerIndex].Image = c.images.nodeDriverRegistrar
 	}
-	if c.images.LivenessProbe != "" {
-		daemonSet.Spec.Template.Spec.Containers[livenessProbeContainerIndex].Image = c.images.LivenessProbe
+	if c.images.livenessProbe != "" {
+		daemonSet.Spec.Template.Spec.Containers[livenessProbeContainerIndex].Image = c.images.livenessProbe
 	}
 
 	logLevel := getLogLevel(spec.LogLevel)
