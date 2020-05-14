@@ -76,13 +76,13 @@ type csiDriverController struct {
 
 	operatorVersion string
 	operandVersion  string
-	images          Images
+	images          images
 
 	manifests resourceapply.AssetFunc
 	files     []string
 }
 
-type Images struct {
+type images struct {
 	CSIDriver           string
 	Attacher            string
 	Provisioner         string
@@ -357,8 +357,8 @@ func logInformerEvent(kind, obj interface{}, message string) {
 	}
 }
 
-func imagesFromEnv() csidrivercontroller.Images {
-	return csidrivercontroller.Images{
+func imagesFromEnv() images {
+	return images{
 		CSIDriver:           os.Getenv(driverImageEnvName),
 		Provisioner:         os.Getenv(provisionerImageEnvName),
 		Attacher:            os.Getenv(attacherImageEnvName),
