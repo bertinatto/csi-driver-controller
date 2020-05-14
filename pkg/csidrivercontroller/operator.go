@@ -2,6 +2,7 @@ package csidrivercontroller
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	corev1 "k8s.io/api/core/v1"
@@ -101,7 +102,6 @@ func NewCSIDriverController(
 	eventRecorder events.Recorder,
 	operatorVersion string,
 	operandVersion string,
-	images Images,
 	manifests resourceapply.AssetFunc,
 	files []string,
 ) *csiDriverController {
@@ -116,14 +116,14 @@ func NewCSIDriverController(
 		queue:              workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "gcp-pd-csi-driver"),
 		operatorVersion:    operatorVersion,
 		operandVersion:     operandVersion,
-		images:             images,
+		images:             imagesFromEnv(),
 		manifests:          manifests,
 		files:              files,
 	}
 
 	deployInformer.Informer().AddEventHandler(controller.eventHandler("deployment"))
 	dsInformer.Informer().AddEventHandler(controller.eventHandler("daemonset"))
-	client.Informer().AddEventHandler(controller.eventHandler("pddriver"))
+	client.Informer().AddEventHandler(controller.eventHandler("csidriver")) //TODO: more generic name?
 
 	controller.informersSynced = append(
 		controller.informersSynced,
@@ -354,5 +354,17 @@ func logInformerEvent(kind, obj interface{}, message string) {
 			return
 		}
 		klog.V(6).Infof("Received event: %s %s %s", kind, objMeta.GetName(), message)
+	}
+}
+
+func imagesFromEnv() csidrivercontroller.Images {
+	return csidrivercontroller.Images{
+		CSIDriver:           os.Getenv(driverImageEnvName),
+		Provisioner:         os.Getenv(provisionerImageEnvName),
+		Attacher:            os.Getenv(attacherImageEnvName),
+		Resizer:             os.Getenv(resizerImageEnvName),
+		Snapshotter:         os.Getenv(snapshotterImageEnvName),
+		NodeDriverRegistrar: os.Getenv(nodeDriverRegistrarImageEnvName),
+		LivenessProbe:       os.Getenv(livenessProbeImageEnvName),
 	}
 }
