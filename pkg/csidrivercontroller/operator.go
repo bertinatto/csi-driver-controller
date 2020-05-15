@@ -103,7 +103,7 @@ func NewCSIDriverController(
 	eventRecorder events.Recorder,
 ) (*csiDriverController, error) {
 
-	if config != nil {
+	if config == nil {
 		return nil, fmt.Errorf("controller config can't be nil")
 	}
 
