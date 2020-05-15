@@ -108,6 +108,7 @@ func NewCSIDriverController(
 	}
 
 	controller := &csiDriverController{
+		config:             config,
 		client:             client,
 		kubeClient:         kubeClient,
 		dynamicClient:      dynamicClient,
