@@ -124,7 +124,7 @@ func NewCSIDriverController(
 
 	deployInformer.Informer().AddEventHandler(controller.eventHandler("deployment"))
 	dsInformer.Informer().AddEventHandler(controller.eventHandler("daemonset"))
-	client.Informer().AddEventHandler(controller.eventHandler("csidriver")) //TODO: more generic name?
+	client.Informer().AddEventHandler(controller.eventHandler(config.OperandName))
 
 	controller.informersSynced = append(
 		controller.informersSynced,
