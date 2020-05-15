@@ -23,7 +23,6 @@ import (
 
 	operatorv1 "github.com/openshift/api/operator/v1"
 	"github.com/openshift/library-go/pkg/operator/events"
-	"github.com/openshift/library-go/pkg/operator/resource/resourceapply"
 	"github.com/openshift/library-go/pkg/operator/status"
 	"github.com/openshift/library-go/pkg/operator/v1helpers"
 )
@@ -89,8 +88,10 @@ type images struct {
 type Config struct {
 	OperandName      string
 	OperandNamespace string
-	Manifests        resourceapply.AssetFunc
-	Files            []string
+
+	ControllerManifest  []byte
+	NodeManifest        []byte
+	CredentialsManifest []byte
 }
 
 func NewCSIDriverController(

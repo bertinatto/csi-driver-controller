@@ -24,15 +24,10 @@ const (
 )
 
 func (c *csiDriverController) syncCredentialsRequest(status *operatorv1.OperatorStatus) (*unstructured.Unstructured, error) {
-	bytes, err := c.config.Manifests(credentialsRequest)
-	if err != nil {
-		return nil, err
-	}
-
-	cr := readCredentialRequestsOrDie(bytes)
+	cr := readCredentialRequestsOrDie(c.config.CredentialsManifest)
 
 	// Set spec.secretRef.namespace
-	err = unstructured.SetNestedField(cr.Object, c.config.OperandNamespace, "spec", "secretRef", "namespace")
+	err := unstructured.SetNestedField(cr.Object, c.config.OperandNamespace, "spec", "secretRef", "namespace")
 	if err != nil {
 		return nil, err
 	}
@@ -88,12 +83,7 @@ func (c *csiDriverController) syncDaemonSet(spec *operatorv1.OperatorSpec, statu
 }
 
 func (c *csiDriverController) getExpectedDeployment(spec *operatorv1.OperatorSpec) *appsv1.Deployment {
-	bytes, err := c.config.Manifests(deployment)
-	if err != nil {
-		return nil
-	}
-
-	deployment := resourceread.ReadDeploymentV1OrDie(bytes)
+	deployment := resourceread.ReadDeploymentV1OrDie(c.config.ControllerManifest)
 
 	if c.images.csiDriver != "" {
 		deployment.Spec.Template.Spec.Containers[0].Image = c.images.csiDriver
@@ -126,11 +116,7 @@ func (c *csiDriverController) getExpectedDeployment(spec *operatorv1.OperatorSpe
 }
 
 func (c *csiDriverController) getExpectedDaemonSet(spec *operatorv1.OperatorSpec) *appsv1.DaemonSet {
-	bytes, err := c.config.Manifests(daemonSet)
-	if err != nil {
-		return nil
-	}
-	daemonSet := resourceread.ReadDaemonSetV1OrDie(bytes)
+	daemonSet := resourceread.ReadDaemonSetV1OrDie(c.config.NodeManifest)
 
 	if c.images.csiDriver != "" {
 		daemonSet.Spec.Template.Spec.Containers[csiDriverContainerIndex].Image = c.images.csiDriver
