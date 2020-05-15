@@ -28,13 +28,9 @@ import (
 	"github.com/openshift/library-go/pkg/operator/v1helpers"
 )
 
-var log = logf.Log.WithName("gcp_pd_csi_driver_operator")
+var log = logf.Log.WithName("csi_driver_controller")
 
 const (
-	operandName       = "gcp-pd-csi-driver"
-	operandNamespace  = "openshift-gcp-pd-csi-driver"
-	operatorNamespace = "openshift-gcp-pd-csi-driver-operator"
-
 	operatorVersionEnvName          = "OPERATOR_IMAGE_VERSION"
 	operandVersionEnvName           = "OPERAND_IMAGE_VERSION"
 	driverImageEnvName              = "DRIVER_IMAGE"
@@ -60,6 +56,8 @@ const (
 )
 
 type csiDriverController struct {
+	config *Config
+
 	client             v1helpers.OperatorClient
 	kubeClient         kubernetes.Interface
 	dynamicClient      dynamic.Interface
@@ -76,9 +74,6 @@ type csiDriverController struct {
 	operatorVersion string
 	operandVersion  string
 	images          images
-
-	manifests resourceapply.AssetFunc
-	files     []string
 }
 
 type images struct {
@@ -91,16 +86,27 @@ type images struct {
 	livenessProbe       string
 }
 
+type Config struct {
+	operandName      string
+	operandNamespace string
+	manifests        resourceapply.AssetFunc
+	files            []string
+}
+
 func NewCSIDriverController(
+	config *Config,
 	client v1helpers.OperatorClient,
 	dynamicClient dynamic.Interface,
 	kubeClient kubernetes.Interface,
 	deployInformer appsinformersv1.DeploymentInformer,
 	dsInformer appsinformersv1.DaemonSetInformer,
 	eventRecorder events.Recorder,
-	manifests resourceapply.AssetFunc,
-	files []string,
-) *csiDriverController {
+) (*csiDriverController, error) {
+
+	if config != nil {
+		return nil, fmt.Errorf("controller config can't be nil")
+	}
+
 	controller := &csiDriverController{
 		client:             client,
 		kubeClient:         kubeClient,
@@ -109,12 +115,10 @@ func NewCSIDriverController(
 		dsSetInformer:      dsInformer,
 		versionGetter:      status.NewVersionGetter(),
 		eventRecorder:      eventRecorder,
-		queue:              workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "gcp-pd-csi-driver"),
+		queue:              workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), config.operandName),
 		operatorVersion:    os.Getenv(operatorVersionEnvName),
 		operandVersion:     os.Getenv(operandVersionEnvName),
 		images:             imagesFromEnv(),
-		manifests:          manifests,
-		files:              files,
 	}
 
 	deployInformer.Informer().AddEventHandler(controller.eventHandler("deployment"))
@@ -130,7 +134,7 @@ func NewCSIDriverController(
 
 	controller.syncHandler = controller.sync
 
-	return controller
+	return controller, nil
 }
 
 func (c *csiDriverController) Run(ctx context.Context, workers int) {

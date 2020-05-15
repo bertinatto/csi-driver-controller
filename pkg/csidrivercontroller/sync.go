@@ -24,7 +24,7 @@ const (
 )
 
 func (c *csiDriverController) syncCredentialsRequest(status *operatorv1.OperatorStatus) (*unstructured.Unstructured, error) {
-	bytes, err := c.manifests(credentialsRequest)
+	bytes, err := c.config.manifests(credentialsRequest)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func (c *csiDriverController) syncCredentialsRequest(status *operatorv1.Operator
 	cr := readCredentialRequestsOrDie(bytes)
 
 	// Set spec.secretRef.namespace
-	err = unstructured.SetNestedField(cr.Object, operandNamespace, "spec", "secretRef", "namespace")
+	err = unstructured.SetNestedField(cr.Object, c.config.operandNamespace, "spec", "secretRef", "namespace")
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func (c *csiDriverController) syncDaemonSet(spec *operatorv1.OperatorSpec, statu
 }
 
 func (c *csiDriverController) getExpectedDeployment(spec *operatorv1.OperatorSpec) *appsv1.Deployment {
-	bytes, err := c.manifests(deployment)
+	bytes, err := c.config.manifests(deployment)
 	if err != nil {
 		return nil
 	}
@@ -126,7 +126,7 @@ func (c *csiDriverController) getExpectedDeployment(spec *operatorv1.OperatorSpe
 }
 
 func (c *csiDriverController) getExpectedDaemonSet(spec *operatorv1.OperatorSpec) *appsv1.DaemonSet {
-	bytes, err := c.manifests(daemonSet)
+	bytes, err := c.config.manifests(daemonSet)
 	if err != nil {
 		return nil
 	}
@@ -180,7 +180,7 @@ func (c *csiDriverController) syncStatus(meta *metav1.ObjectMeta, status *operat
 	}
 
 	c.setVersion("operator", c.operatorVersion)
-	c.setVersion("gcp-pd-csi-driver", c.operandVersion)
+	c.setVersion(c.config.operandName, c.operandVersion)
 
 	return nil
 }
