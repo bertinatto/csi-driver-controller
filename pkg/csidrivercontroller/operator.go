@@ -87,10 +87,10 @@ type images struct {
 }
 
 type Config struct {
-	operandName      string
-	operandNamespace string
-	manifests        resourceapply.AssetFunc
-	files            []string
+	OperandName      string
+	OperandNamespace string
+	Manifests        resourceapply.AssetFunc
+	Files            []string
 }
 
 func NewCSIDriverController(
@@ -115,7 +115,7 @@ func NewCSIDriverController(
 		dsSetInformer:      dsInformer,
 		versionGetter:      status.NewVersionGetter(),
 		eventRecorder:      eventRecorder,
-		queue:              workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), config.operandName),
+		queue:              workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), config.OperandName),
 		operatorVersion:    os.Getenv(operatorVersionEnvName),
 		operandVersion:     os.Getenv(operandVersionEnvName),
 		images:             imagesFromEnv(),
