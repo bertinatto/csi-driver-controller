@@ -1,6 +1,7 @@
 package csidrivercontroller
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"time"
@@ -72,8 +73,6 @@ type csiDriverController struct {
 
 	queue workqueue.RateLimitingInterface
 
-	stopCh <-chan struct{}
-
 	operatorVersion string
 	operandVersion  string
 	images          images
@@ -137,11 +136,11 @@ func NewCSIDriverController(
 	return controller
 }
 
-func (c *csiDriverController) Run(workers int, stopCh <-chan struct{}) {
+func (c *csiDriverController) Run(ctx context.Context, workers int) {
 	defer utilruntime.HandleCrash()
 	defer c.queue.ShutDown()
 
-	c.stopCh = stopCh
+	stopCh := ctx.Done()
 
 	if !cache.WaitForCacheSync(stopCh, c.informersSynced...) {
 		return
