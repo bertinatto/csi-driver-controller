@@ -12,6 +12,7 @@ require (
 	go.uber.org/atomic v1.4.0 // indirect
 	golang.org/x/sys v0.0.0-20200124204421-9fbb57f87de9 // indirect
 	k8s.io/api v0.18.2
+	k8s.io/apiextensions-apiserver v0.18.2
 	k8s.io/apimachinery v0.18.2
 	k8s.io/client-go v0.18.2
 	k8s.io/klog v1.0.0
