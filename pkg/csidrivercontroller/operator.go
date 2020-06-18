@@ -157,7 +157,7 @@ func (c *csiDriverController) Run(ctx context.Context, workers int) {
 }
 
 func (c *csiDriverController) sync() error {
-	meta, _, err := c.client.GetObjectMeta()
+	meta, err := c.client.GetObjectMeta()
 	if err != nil {
 		if errors.IsNotFound(err) {
 			klog.Warningf("Object metadata not found: %v", err)
